@@ -71,3 +71,24 @@ desktop.ini
 *.log
 
 .dotnet/
+
+app/node_modules/
+app/dist/
+app/tmp/
+app/out-tsc/
+app/bazel-out/
+app/.angular/cache/
+app/.sass-cache/
+app/connect.lock
+app/coverage/
+app/libpeerconnection.log
+app/testem.log
+app/typings/
+app/__screenshots__/
+app/.history/
+app/npm-debug.log
+app/yarn-error.log
+app/.c9/
+app/*.launch
+app/.settings/
+app/*.sublime-workspace

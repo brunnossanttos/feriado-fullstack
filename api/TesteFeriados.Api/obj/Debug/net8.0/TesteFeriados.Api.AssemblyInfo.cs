@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TesteFeriados.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+59194b52b9902b3f84f70db3613833baba0263e1")]
 [assembly: System.Reflection.AssemblyProductAttribute("TesteFeriados.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TesteFeriados.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

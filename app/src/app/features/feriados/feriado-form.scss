@@ -1,0 +1,102 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.form__title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-strong);
+}
+
+.form__server-error {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  background: #fff1f1;
+  border: 1px solid #f5c2c2;
+  color: var(--danger);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form__field > span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.form__field input,
+.form__field textarea {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.form__field input:focus,
+.form__field textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form__row {
+  display: flex;
+  gap: 0.9rem;
+}
+
+.form__row .form__field {
+  flex: 1;
+}
+
+.form__error {
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
+.form__variable {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form__variable legend {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+
+.form__variable-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.form__variable-row input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.form__variable-row input:first-child {
+  max-width: 90px;
+}
+
+.form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}

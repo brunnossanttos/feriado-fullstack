@@ -1,0 +1,157 @@
+<section class="feriados">
+  <div class="toolbar">
+    <button type="button" class="btn btn--primary" (click)="openCreate()">Novo feriado</button>
+  </div>
+
+  <form class="filters" [formGroup]="filterForm">
+    <label class="filters__field">
+      <span>Nome</span>
+      <input type="text" formControlName="title" placeholder="Filtrar por título" />
+    </label>
+
+    <label class="filters__field">
+      <span>Data</span>
+      <input type="text" formControlName="date" placeholder="dd/MM" inputmode="numeric" />
+    </label>
+
+    <button type="button" class="btn" (click)="clearFilters()">Limpar</button>
+  </form>
+
+  @if (feedback(); as msg) {
+    <p class="feedback" role="status" aria-live="polite">{{ msg }}</p>
+  }
+
+  <div class="results" [attr.aria-busy]="loading()">
+    @if (loading()) {
+      <div class="state state--loading" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Carregando...</span>
+      </div>
+    } @else if (error()) {
+      <p class="state state--error">{{ error() }}</p>
+      <button type="button" class="btn" (click)="reload()">Tentar novamente</button>
+    } @else if (result(); as res) {
+      @if (res.items.length === 0) {
+        <p class="state">Nenhum feriado encontrado.</p>
+      } @else {
+        <div class="grid-wrapper">
+        <table class="grid">
+          <thead>
+            <tr>
+              <th scope="col">Título</th>
+              <th scope="col">Data</th>
+              <th scope="col">Tipo</th>
+              <th scope="col" class="grid__actions">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (feriado of res.items; track feriado.id) {
+              <tr>
+                <td>{{ feriado.title }}</td>
+                <td>{{ feriado.date ?? '—' }}</td>
+                <td>{{ feriado.type ?? '—' }}</td>
+                <td class="grid__actions">
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    (click)="openEdit(feriado)"
+                    [attr.aria-label]="'Editar ' + feriado.title"
+                    title="Editar"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M4 20h4L18.5 9.5a2.121 2.121 0 0 0-3-3L5 17v3ZM13.5 6.5l3 3"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-btn icon-btn--danger"
+                    (click)="askDelete(feriado)"
+                    [attr.aria-label]="'Excluir ' + feriado.title"
+                    title="Excluir"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7h12ZM10 11v6M14 11v6"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+
+        <nav class="pagination" aria-label="Paginação">
+          <button
+            type="button"
+            class="btn"
+            (click)="goToPage(res.page - 1)"
+            [disabled]="res.page <= 1"
+          >
+            Anterior
+          </button>
+
+          <span class="pagination__info">
+            Página {{ res.page }} de {{ res.totalPages }} ({{ res.totalCount }} registros)
+          </span>
+
+          <button
+            type="button"
+            class="btn"
+            (click)="goToPage(res.page + 1)"
+            [disabled]="res.page >= res.totalPages"
+          >
+            Próxima
+          </button>
+        </nav>
+      }
+    }
+  </div>
+</section>
+
+@if (showForm()) {
+  <div class="modal-backdrop">
+    <div class="modal modal--form">
+      <app-feriado-form
+        [feriado]="editing()"
+        (saved)="onFormSaved()"
+        (cancelled)="onFormCancelled()"
+      />
+    </div>
+  </div>
+}
+
+@if (pendingDelete(); as target) {
+  <div class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <h2 id="confirm-title" class="modal__title">Excluir feriado</h2>
+      <p class="modal__text">
+        Tem certeza que deseja excluir <strong>{{ target.title }}</strong>?
+      </p>
+      <div class="modal__actions">
+        <button type="button" class="btn" (click)="cancelDelete()" [disabled]="deleting()">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn--danger"
+          (click)="confirmDelete()"
+          [disabled]="deleting()"
+        >
+          {{ deleting() ? 'Excluindo...' : 'Excluir' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,84 @@
+<form class="form" [formGroup]="form" (ngSubmit)="submit()">
+  <h2 class="form__title">{{ isEditing ? 'Editar feriado' : 'Novo feriado' }}</h2>
+
+  @if (serverError(); as msg) {
+    <p class="form__server-error">{{ msg }}</p>
+  }
+
+  <label class="form__field">
+    <span>Título *</span>
+    <input type="text" formControlName="title" maxlength="200" />
+    @if (form.controls.title.touched && form.controls.title.invalid) {
+      <small class="form__error">
+        @if (form.controls.title.hasError('required')) {
+          O título é obrigatório.
+        } @else if (form.controls.title.hasError('maxlength')) {
+          O título deve ter no máximo 200 caracteres.
+        }
+      </small>
+    }
+  </label>
+
+  <div class="form__row">
+    <label class="form__field">
+      <span>Data (dd/MM)</span>
+      <input type="text" formControlName="date" maxlength="10" placeholder="dd/MM" />
+    </label>
+
+    <label class="form__field">
+      <span>Tipo</span>
+      <input type="text" formControlName="type" maxlength="50" />
+    </label>
+  </div>
+
+  <div class="form__row">
+    <label class="form__field">
+      <span>Início</span>
+      <input type="text" formControlName="startTime" maxlength="10" />
+    </label>
+
+    <label class="form__field">
+      <span>Fim</span>
+      <input type="text" formControlName="endTime" maxlength="10" />
+    </label>
+  </div>
+
+  <label class="form__field">
+    <span>Descrição</span>
+    <textarea formControlName="description" rows="2"></textarea>
+  </label>
+
+  <label class="form__field">
+    <span>Legislação</span>
+    <textarea formControlName="legislation" rows="2"></textarea>
+  </label>
+
+  <fieldset class="form__variable">
+    <legend>Datas variáveis (ano → dd/MM)</legend>
+
+    @for (group of variableDates.controls; track $index) {
+      <div class="form__variable-row" [formGroup]="group">
+        <input type="text" formControlName="year" placeholder="Ano" maxlength="4" />
+        <input type="text" formControlName="date" placeholder="dd/MM" maxlength="10" />
+        <button
+          type="button"
+          class="icon-btn icon-btn--danger"
+          (click)="removeVariableDate($index)"
+          aria-label="Remover data variável"
+          title="Remover"
+        >
+          ✕
+        </button>
+      </div>
+    }
+
+    <button type="button" class="btn" (click)="addVariableDate()">Adicionar data variável</button>
+  </fieldset>
+
+  <div class="form__actions">
+    <button type="button" class="btn" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+    <button type="submit" class="btn btn--primary" [disabled]="saving()">
+      {{ saving() ? 'Salvando...' : 'Salvar' }}
+    </button>
+  </div>
+</form>

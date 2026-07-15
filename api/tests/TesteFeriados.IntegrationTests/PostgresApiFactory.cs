@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using TesteFeriados.Infrastructure.Persistence;
 using Testcontainers.PostgreSql;
 
 namespace TesteFeriados.IntegrationTests;
@@ -16,17 +18,14 @@ public sealed class PostgresApiFactory : WebApplicationFactory<Program>, IAsyncL
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((_, config) =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:FeriadosDb"] = _postgres.GetConnectionString()
-            });
-        });
-
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<IHostedService>();
+
+            services.RemoveAll<DbContextOptions<FeriadosDbContext>>();
+            services.RemoveAll<DbContextOptions>();
+            services.AddDbContext<FeriadosDbContext>(options =>
+                options.UseNpgsql(_postgres.GetConnectionString()));
         });
     }
 

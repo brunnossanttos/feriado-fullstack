@@ -92,9 +92,3 @@ app/.c9/
 app/*.launch
 app/.settings/
 app/*.sublime-workspace
-
-.claude/
-CLAUDE.md
-/guide.md
-/plano-api.md
-/explain.md

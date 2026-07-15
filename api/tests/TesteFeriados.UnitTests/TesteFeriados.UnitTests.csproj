@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\TesteFeriados.Api\TesteFeriados.Api.csproj" />
     <ProjectReference Include="..\..\src\TesteFeriados.Domain\TesteFeriados.Domain.csproj" />
     <ProjectReference Include="..\..\src\TesteFeriados.Infrastructure\TesteFeriados.Infrastructure.csproj" />
   </ItemGroup>

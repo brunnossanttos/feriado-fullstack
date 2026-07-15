@@ -8,7 +8,9 @@ public sealed class UpdateFeriadoRequest
     [StringLength(200, ErrorMessage = "O título deve ter no máximo 200 caracteres.")]
     public string Title { get; set; } = string.Empty;
 
-    [StringLength(10, ErrorMessage = "A data deve ter no máximo 10 caracteres (ex.: \"dd/MM\").")]
+    [RegularExpression(
+        @"^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])$",
+        ErrorMessage = "A data deve estar no formato dd/MM, com mês entre 01 e 12.")]
     public string? Date { get; set; }
 
     public string? Description { get; set; }

@@ -46,7 +46,10 @@ public class FeriadoRepository : IFeriadoRepository
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query
-            .OrderBy(f => f.Title)
+            .OrderBy(f => f.Date == null)
+            .ThenBy(f => f.Date!.Substring(3, 2))
+            .ThenBy(f => f.Date!.Substring(0, 2))
+            .ThenBy(f => f.Title)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

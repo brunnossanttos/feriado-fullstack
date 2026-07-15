@@ -22,7 +22,10 @@
   <div class="form__row">
     <label class="form__field">
       <span>Data (dd/MM)</span>
-      <input type="text" formControlName="date" maxlength="10" placeholder="dd/MM" />
+      <input type="text" formControlName="date" maxlength="5" placeholder="dd/MM" />
+      @if (form.controls.date.touched && form.controls.date.hasError('pattern')) {
+        <small class="form__error">Use o formato dd/MM, com mês entre 01 e 12.</small>
+      }
     </label>
 
     <label class="form__field">

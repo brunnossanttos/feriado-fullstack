@@ -69,6 +69,39 @@ public sealed class FeriadosApiIntegrationTests
         Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
     }
 
+    [Theory]
+    [InlineData("25/13")]
+    [InlineData("25/00")]
+    [InlineData("32/12")]
+    [InlineData("2512")]
+    public async Task Post_DataInvalida_Retorna400(string date)
+    {
+        var client = _factory.CreateClient();
+
+        var resp = await client.PostAsJsonAsync(
+            "/api/feriados",
+            new CreateFeriadoRequest { Title = $"INV {Guid.NewGuid()}", Date = date });
+
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+    }
+
+    [Fact]
+    public async Task Lista_OrdenaPorData()
+    {
+        var client = _factory.CreateClient();
+        var prefixo = $"ORD{Guid.NewGuid():N}";
+
+        await client.PostAsJsonAsync("/api/feriados", new CreateFeriadoRequest { Title = $"{prefixo}-C", Date = "07/09" });
+        await client.PostAsJsonAsync("/api/feriados", new CreateFeriadoRequest { Title = $"{prefixo}-A", Date = "01/01" });
+        await client.PostAsJsonAsync("/api/feriados", new CreateFeriadoRequest { Title = $"{prefixo}-B", Date = "21/04" });
+
+        var res = await (await client.GetAsync($"/api/feriados?title={prefixo}&pageSize=5"))
+            .Content.ReadFromJsonAsync<PagedResult<FeriadoResponse>>();
+
+        var datas = res!.Items.Select(f => f.Date).ToList();
+        Assert.Equal(new[] { "01/01", "21/04", "07/09" }, datas);
+    }
+
     [Fact]
     public async Task Jsonb_VariableDates_FazRoundTripNoBanco()
     {

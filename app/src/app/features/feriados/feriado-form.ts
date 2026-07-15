@@ -44,7 +44,7 @@ export class FeriadoForm {
 
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(200)]],
-    date: ['', [Validators.maxLength(10)]],
+    date: ['', [Validators.pattern(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])$/)]],
     description: [''],
     legislation: [''],
     type: ['', [Validators.maxLength(50)]],

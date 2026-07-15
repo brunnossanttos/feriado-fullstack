@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  backend:
+    name: Backend (build + testes)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: api/global.json
+
+      - name: Restore
+        working-directory: api
+        run: dotnet restore TesteFeriados.sln
+
+      - name: Build
+        working-directory: api
+        run: dotnet build TesteFeriados.sln --configuration Release --no-restore
+
+      - name: Testes (unit + integração via Testcontainers)
+        working-directory: api
+        run: dotnet test TesteFeriados.sln --configuration Release --no-build --verbosity normal
+
+  frontend:
+    name: Frontend (build + testes)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: feriados
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d feriados"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: api/global.json
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Instalar dependências do app
+        working-directory: app
+        run: npm ci
+
+      - name: Build do app
+        working-directory: app
+        run: npm run build
+
+      - name: Subir a API e rodar os testes do front
+        working-directory: app
+        env:
+          ASPNETCORE_URLS: http://localhost:5010
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__FeriadosDb: Host=localhost;Port=5432;Database=feriados;Username=postgres;Password=postgres
+        run: |
+          dotnet run --project ../api/src/TesteFeriados.Api > api.log 2>&1 &
+          API_PID=$!
+
+          echo "Aguardando a API em http://localhost:5010 ..."
+          for i in $(seq 1 60); do
+            if curl -sf "http://localhost:5010/api/feriados?pageSize=1" > /dev/null; then
+              echo "API no ar."
+              break
+            fi
+            sleep 2
+          done
+
+          if ! curl -sf "http://localhost:5010/api/feriados?pageSize=1" > /dev/null; then
+            echo "A API não subiu a tempo."
+            cat api.log
+            kill $API_PID || true
+            exit 1
+          fi
+
+          if npm test; then
+            RESULT=0
+          else
+            RESULT=$?
+            echo "==== api.log ===="
+            cat api.log
+          fi
+
+          kill $API_PID || true
+          exit $RESULT
